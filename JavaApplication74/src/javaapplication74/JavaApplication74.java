@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 public class Chrome {
 
     private static WebDriver driver;
-    WebElement element;
+    private static WebElement element;
     
     @BeforeClass
     public static void starterChrome() {
