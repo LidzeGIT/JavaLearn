@@ -1,23 +1,60 @@
-@Дано("^я авторизовался в системе \\\"([^\\\"]*)\\\" и выполнил метод \\\"([^\\\"]*)\\\"$")
-    public void authentication(String URI, String path){
-        baseURI = URI;
-        basePath = path;
-        authentication = ntlm(getProperty("username"),
-                getProperty("password"),
-                null, getProperty("domain"));
-    }
-
-    @Тогда("^я выполняю метод GET$")
-    public void getAssert(){
-        response = when().get();
-    }
-
-    @Тогда("^я провожу блокировку с телом:")
-    public void putBlock(String jsons){
-        response = given().contentType("application/json").body(jsons).when().put();
-    }
-    @Тогда("^я делаю проверку что тело \"([^\"]*)\" равно \"([^\"]*)\"$")
-    public void asserts(String path, String asserts){
-        jsonResponse = response.jsonPath().getString(path);
-        Assert.assertEquals(asserts,jsonResponse);
-    }
+  <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.20</version>
+                <configuration>
+                    <testFailureIgnore>false</testFailureIgnore>
+                    <argLine>
+                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
+                    </argLine>
+                    <properties>
+                        <property>
+                            <name>listener</name>
+                            <value>io.qameta.allure.junit4.AllureJunit4</value>
+                        </property>
+                    </properties>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.aspectj</groupId>
+                        <artifactId>aspectjweaver</artifactId>
+                        <version>${aspectj.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-maven</artifactId>
+                <configuration>
+                    <properties>
+                        <allure.issues.tracker.pattern>http://example.com/%s</allure.issues.tracker.pattern>
+                    </properties>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <reporting>
+        <excludeDefaults>true</excludeDefaults>
+        <plugins>
+            <plugin>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-maven</artifactId>
+                <version>2.9</version>
+                <configuration>
+                    <reportVersion>2.6.0</reportVersion>
+                    <!--resultsPattern>${project.build.directory}/allure-results</resultsPattern-->
+                    <reportDirectory>${project.build.directory}/allure-report</reportDirectory>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
